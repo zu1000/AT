@@ -78,10 +78,8 @@ class KFrame(wx.MDIChildFrame):
         self.ax.autoscale_view()
         pylab.setp(pylab.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
 
-'''        
 if __name__ == '__main__':
     app = wx.PySimpleApp()
-    app.frame = KFrame()
+    app.frame = KFrame(None)
     app.frame.Show()
     app.MainLoop()
-'''

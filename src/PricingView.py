@@ -2,7 +2,7 @@ import wx
 import os
 
 from MarketDepthView import *
-from Dialog import *
+from Dialogs import *
 
 ADM_LOGIN_ID = wx.NewId()
 ADM_LOGOUT_ID = wx.NewId()
@@ -13,7 +13,7 @@ VIW_IND_ID = wx.NewId()
 
 class PricingView(wx.Frame) :
     def __init__(self, name) :
-        wx.Frame.__init__(self, None, -1, name)
+        wx.Frame.__init__(self, None, -1, name, size=(640,480))
 
         # create menu 
         self.CreateMenu()
@@ -47,6 +47,7 @@ class PricingView(wx.Frame) :
         self.rpnl.SetBackgroundColour(wx.BLACK)
         self.hbox = wx.BoxSizer(wx.HORIZONTAL)
         self.vsplitter.SplitVertically(self.lpnl, self.rpnl, 1)
+        self.vsplitter.Unsplit(self.lpnl)
         self.hbox.Add(self.vsplitter, 1, wx.EXPAND)
         self.upnl.SetSizer(self.hbox)
 
@@ -54,6 +55,8 @@ class PricingView(wx.Frame) :
         self.mdv = MarketDepthView(self.rpnl)
         vbox.Add(self.mdv, -1, wx.EXPAND)
         self.rpnl.SetSizer(vbox)
+
+        self.Bind(wx.EVT_RIGHT_DOWN, self.OnRightDown)
 
     def CreateMenu(self):
         '''Admin Menu'''
@@ -107,7 +110,9 @@ class PricingView(wx.Frame) :
         pass
 
     def OnAdminLogin(self, event):
-        '''Should call login'''
+        login = LoginDialog(self, -1)
+        val = login.ShowModal()
+        login.Destroy()
         pass
 
     def OnAdminLogout(self, event):
@@ -120,10 +125,47 @@ class PricingView(wx.Frame) :
         pass
 
     def OnMktDepthView(self, event):
+        self.mdv.Show()
         pass
 
     def OnIndicatorView(self, event):
+        self.mdv.Hide()
         pass
+
+    def OnRightClick(self, event):
+        if not hasattr(self, "popupID1"):
+            self.popupID1 = wx.NewId()
+            self.popupID2 = wx.NewId()
+            self.popupID3 = wx.NewId()
+            self.popupID4 = wx.NewId()
+            self.popupID5 = wx.NewId()
+            self.popupID6 = wx.NewId()
+            self.popupID7 = wx.NewId()
+
+        self.Bind(wx.EVT_MENU, self.OnIndicatorView, id=self.popupID1)
+        self.Bind(wx.EVT_MENU, self.OnSendOrder, id=self.popupID2)
+        self.Bind(wx.EVT_MENU, self.OnClosePosition, id=self.popupID3)
+        self.Bind(wx.EVT_MENU, self.OnStartStrategy, id=self.popupID4)
+        self.Bind(wx.EVT_MENU, self.OnStopStrategy, id=self.popupID5)
+        self.Bind(wx.EVT_MENU, self.OnStopAllStrategy, id=self.popupID6)
+        self.Bind(wx.EVT_MENU, self.OnOpenOrderBook, id=self.popupID7)
+
+        menu = wx.Menu()
+        menu.Append(self.popupID1, "Open Indicator View")
+        menu.Append(self.popupID2, "Send Order")
+        menu.Append(self.popupID3, "Close Position")
+        menu.Append(self.popupID4, "Start Strategies")
+        menu.Append(self.popupID5, "Stop Strategy")
+        menu.Append(self.popupID6, "Stop All Strategies")
+        menu.Append(self.popupID7, "Open Order Book")
+
+        self.PopupMenu(menu)
+        menu.Destroy()
+
+        pass
+
+    def OnRightDown(self, event):
+        print "Right Click"
 
 if __name__ == "__main__":
     app = wx.PySimpleApp()

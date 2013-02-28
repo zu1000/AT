@@ -1,8 +1,5 @@
 import wx, sys
 
-OK_ID = wx.NewId()
-CLOSE_ID = wx.NewId()
-
 class CtrSelectorPanel(wx.Panel):
     def __init__(self, *args, **kw):
         wx.Panel.__init__(self, *args, **kw)
@@ -58,18 +55,18 @@ class CtrSelector(wx.Dialog):
     def InitLayout(self):
         vbox = wx.BoxSizer(wx.VERTICAL)
         self.pnl = CtrSelectorPanel(self)
-        vbox.Add(self.pnl, 1, wx.ALL|wx.EXPAND)
+        vbox.Add(self.pnl, 1, wx.ALIGN_CENTRE|wx.ALL|wx.EXPAND, 20)
 
-        hbox = wx.BoxSizer(wx.HORIZONTAL)
-        okButton = wx.Button(self, label="Ok", id=OK_ID)
-        clButton = wx.Button(self, label="Close", id=CLOSE_ID)
-        hbox.Add(okButton)
-        hbox.Add(clButton, flag=wx.LEFT, border=5)
-        vbox.Add(hbox, flag=wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border=10)
+        btnbox = wx.StdDialogButtonSizer()
+        okButton = wx.Button(self, id=wx.ID_OK)
+        clButton = wx.Button(self, id=wx.ID_CANCEL)
+        btnbox.Add(okButton)
+        btnbox.Add(clButton)
+        btnbox.Realize()
+
+        vbox.Add(btnbox, flag=wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border=10)
+
         self.SetSizer(vbox)
-
-        self.Bind(wx.EVT_BUTTON, self.OnOk, id=OK_ID)
-        self.Bind(wx.EVT_BUTTON, self.OnClose, id=CLOSE_ID)
 
     def GetSelected(self):
         if (self.pnl is not None and self.pnl.selected is not None):
@@ -87,6 +84,47 @@ class CtrSelector(wx.Dialog):
         pass
 
 
+class LoginDialog(wx.Dialog):
+    def __init__(self, *args, **kw):
+        wx.Dialog.__init__(self, *args, **kw)
+        self.SetSize((200,200))
+        self.SetTitle("Login Infomation");
+
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+        vbox1 = wx.BoxSizer(wx.VERTICAL)
+        label1 = wx.StaticText(self, -1, "User:", style=wx.ALIGN_RIGHT);
+        label2 = wx.StaticText(self, -1, "Password:", style=wx.ALIGN_RIGHT);
+        label3 = wx.StaticText(self, -1, "Host:", style=wx.ALIGN_RIGHT);
+        vbox1.Add(label1, 0, wx.ALIGN_RIGHT|wx.ALL, 10)
+        vbox1.Add(label2, 0, wx.ALIGN_RIGHT|wx.ALL, 10)
+        vbox1.Add(label3, 0, wx.ALIGN_RIGHT|wx.ALL, 10)
+
+        vbox2 = wx.BoxSizer(wx.VERTICAL)
+        self.text1 = wx.TextCtrl(self, -1, "")
+        self.text2 = wx.TextCtrl(self, -1, "");
+        self.text3 = wx.TextCtrl(self, -1, "");
+        vbox2.Add(self.text1, 1, wx.ALIGN_LEFT|wx.ALL, 5)
+        vbox2.Add(self.text2, 1, wx.ALIGN_LEFT|wx.ALL, 5)
+        vbox2.Add(self.text3, 1, wx.ALIGN_LEFT|wx.ALL, 5)
+
+        hbox.Add(vbox1, 0, wx.ALIGN_CENTRE|wx.ALL)
+        hbox.Add(vbox2, 1, wx.ALIGN_CENTRE|wx.ALL)
+
+        vbox3 = wx.BoxSizer(wx.VERTICAL)
+        vbox3.Add(hbox, 1, wx.ALIGN_CENTRE|wx.ALL, 5)
+
+        btnbox = wx.StdDialogButtonSizer()
+        okButton = wx.Button(self, id=wx.ID_OK)
+        clButton = wx.Button(self, id=wx.ID_CANCEL)
+        btnbox.Add(okButton)
+        btnbox.Add(clButton)
+        btnbox.Realize()
+ 
+        vbox3.Add(btnbox, 0, wx.ALIGN_CENTRE|wx.ALL, 15)
+
+        self.SetSizer(vbox3)
+
 if __name__ == "__main__":
     try:
         app = wx.PySimpleApp()
@@ -94,5 +132,11 @@ if __name__ == "__main__":
         selector.ShowModal()
         selector.Destroy()
         print selector.GetSelected()
+        login = LoginDialog(None, -1)
+        val = login.ShowModal()
+        print val
+        if val == wx.ID_OK:
+            print login.text1.GetValue() + ":" + login.text2.GetValue() + ":" + login.text3.GetValue()
+        login.Destroy()
     except(KeyboardInterrupt, SystemExit):
         sys.exit()
