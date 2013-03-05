@@ -75,9 +75,7 @@ class PricingView(wx.Frame) :
 
         '''View Menu'''
         viewmenu = wx.Menu()
-        viewmenu.Append(VIW_MKTDPT_ID, "Market &Depth View")
         viewmenu.Append(VIW_IND_ID, "&Indicator View")
-        self.Bind(wx.EVT_MENU, self.OnMktDepthView, id=VIW_MKTDPT_ID)
         self.Bind(wx.EVT_MENU, self.OnIndicatorView, id=VIW_IND_ID)
 
         '''The menu bar'''
@@ -124,13 +122,12 @@ class PricingView(wx.Frame) :
         self.Close()
         pass
 
-    def OnMktDepthView(self, event):
-        self.mdv.Show()
-        pass
-
     def OnIndicatorView(self, event):
-        self.mdv.Hide()
-        pass
+        if event.GetId() == VIW_IND_ID:
+            selector = CtrSelector(self, -1)
+            selector.ShowModal()
+            selector.Destroy()
+            items = selector.GetSelected()
 
     def OnRightClick(self, event):
         if not hasattr(self, "popupID1"):
